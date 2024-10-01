@@ -1,0 +1,30 @@
+name: Slack notify
+on:
+  pull_request:
+    types:
+      - labeled
+
+jobs:
+  notify:
+    if: >
+      github.event.label.name == '3days opened' &&
+      github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: notify
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          text: This PR open for 3 days.
+          attachments: |
+            [
+              {
+                "fields": [
+                  {
+                    "title": "PR URL",
+                    "value": "${{ github.event.pull_request.html_url }}"
+                  }
+                ]
+              }
+            ]
